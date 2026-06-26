@@ -93,9 +93,8 @@ body {
 
 .keychain-wrap {
   position: absolute;
-
   top: -64px;
-  right: 18px;
+  right: 6px;
 
   display: flex;
   flex-direction: column;
@@ -552,6 +551,11 @@ body {
 }
 
 @media (max-width: 420px) {
+  .keychain-wrap {
+    right: -20px;
+    top: -62px;
+  }
+
   .hero-title {
     font-size: 34px;
   }
