@@ -17,7 +17,6 @@ const ICONS = {
       <path d="M37 66h6"/>
     </g>`,
   },
-
   ghost: {
     label: '무섭지',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -27,7 +26,6 @@ const ICONS = {
       <path d="M34 48q6 4 12 0"/>
     </g>`,
   },
-
   frog: {
     label: '개굴',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -41,7 +39,6 @@ const ICONS = {
       <path d="M15 70l8-2M65 70l-8-2"/>
     </g>`,
   },
-
   bear: {
     label: '곰돌이',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -54,7 +51,6 @@ const ICONS = {
       <path d="M37 55q3 3 6 0"/>
     </g>`,
   },
-
   star: {
     label: '★',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -63,7 +59,6 @@ const ICONS = {
       <path d="M36 66h8"/>
     </g>`,
   },
-
   heart: {
     label: '♡',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -71,7 +66,6 @@ const ICONS = {
       <path d="M32 25q-3-4-8-3"/>
     </g>`,
   },
-
   bunny: {
     label: '살려줘',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -83,7 +77,6 @@ const ICONS = {
       <path d="M35 62q5 4 10 0"/>
     </g>`,
   },
-
   chick: {
     label: '삐약',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -95,7 +88,6 @@ const ICONS = {
       <path d="M20 55l-8 7M60 55l8 7"/>
     </g>`,
   },
-
   dino: {
     label: '으쌰',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -107,7 +99,6 @@ const ICONS = {
       <path d="M25 66l-5 9M55 66l5 9"/>
     </g>`,
   },
-
   cloud: {
     label: '뭉게',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -118,7 +109,6 @@ const ICONS = {
       <path d="M31 66v6M49 66v6"/>
     </g>`,
   },
-
   mushroom: {
     label: '밟지마라',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -130,7 +120,6 @@ const ICONS = {
       <path d="M33 52h14"/>
     </g>`,
   },
-
   alien: {
     label: '개피곤',
     svg: `<g stroke="#1a1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -141,86 +130,6 @@ const ICONS = {
       <path d="M22 30l-5-10M58 30l5-10"/>
     </g>`,
   },
-};
-
-const SWITCHES = {
-  blue: (ctx) => {
-    const now = ctx.currentTime;
-
-    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.003, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-
-    for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
-    }
-
-    const src1 = ctx.createBufferSource();
-    const gain1 = ctx.createGain();
-    const filter1 = ctx.createBiquadFilter();
-
-    src1.buffer = buf;
-    filter1.type = 'bandpass';
-    filter1.frequency.value = 3200;
-    filter1.Q.value = 0.8;
-
-    gain1.gain.setValueAtTime(0.45, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-
-    src1.connect(filter1);
-    filter1.connect(gain1);
-    gain1.connect(ctx.destination);
-    src1.start(now);
-  },
-
-  brown: (ctx) => {
-    const now = ctx.currentTime;
-
-    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.005, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-
-    for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (data.length * 0.3));
-    }
-
-    const src = ctx.createBufferSource();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-
-    src.buffer = buf;
-    filter.type = 'bandpass';
-    filter.frequency.value = 1200;
-    filter.Q.value = 0.6;
-
-    gain.gain.setValueAtTime(0.38, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-    src.start(now);
-  },
-
-  red: (ctx) => {
-    const now = ctx.currentTime;
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(190, now);
-    osc.frequency.exponentialRampToValueAtTime(85, now + 0.09);
-
-    gain.gain.setValueAtTime(0.13, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + 0.12);
-  },
-
-  silent: null,
 };
 
 let count = 0;
@@ -235,6 +144,7 @@ const capLabel = document.getElementById('capLabel');
 const rippleLayer = document.getElementById('rippleLayer');
 const countNum = document.getElementById('countNum');
 const countStatus = document.getElementById('countStatus');
+const stage = document.querySelector('.stage');
 
 const STATUS_MAP = [
   [500, '키캡 신 🏆'],
@@ -264,6 +174,216 @@ function getCtx() {
 
   return audioCtx;
 }
+
+function playNoise(ctx, {
+  start = 0,
+  duration = 0.006,
+  gain = 0.2,
+  frequency = 2500,
+  q = 1.5,
+  decay = 0.012,
+  filterType = 'bandpass',
+}) {
+  const now = ctx.currentTime + start;
+
+  const buffer = ctx.createBuffer(
+    1,
+    Math.floor(ctx.sampleRate * duration),
+    ctx.sampleRate
+  );
+
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < data.length; i++) {
+    const t = i / data.length;
+
+    data[i] =
+      (Math.random() * 2 - 1) *
+      Math.pow(1 - t, 2.8);
+  }
+
+  const src = ctx.createBufferSource();
+  const filter = ctx.createBiquadFilter();
+  const g = ctx.createGain();
+
+  src.buffer = buffer;
+
+  filter.type = filterType;
+  filter.frequency.value = frequency;
+  filter.Q.value = q;
+
+  g.gain.setValueAtTime(gain, now);
+  g.gain.linearRampToValueAtTime(0.001, now + decay);
+
+  src.connect(filter);
+  filter.connect(g);
+  g.connect(ctx.destination);
+
+  src.start(now);
+}
+
+function playTone(ctx, {
+  start = 0,
+  duration = 0.02,
+  gain = 0.08,
+  frequency = 1200,
+  type = 'triangle',
+  detune = 0,
+  decay = 0.012,
+}) {
+  const now = ctx.currentTime + start;
+  const osc = ctx.createOscillator();
+  const filter = ctx.createBiquadFilter();
+  const g = ctx.createGain();
+
+  osc.type = type;
+  osc.frequency.value = frequency;
+  osc.detune.value = detune;
+
+  filter.type = 'lowpass';
+  filter.frequency.value = Math.max(600, frequency * 2.4);
+  filter.Q.value = 0.7;
+
+  g.gain.setValueAtTime(0.0001, now);
+  g.gain.exponentialRampToValueAtTime(Math.max(gain, 0.0002), now + 0.001);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + decay);
+
+  osc.connect(filter);
+  filter.connect(g);
+  g.connect(ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + duration + 0.02);
+}
+
+function playKeyboardPress(ctx, profile) {
+  const jitter = (Math.random() - 0.5) * 0.003;
+  const clickScale = 0.9 + Math.random() * 0.2;
+  const bodyScale = 0.92 + Math.random() * 0.16;
+  const thudScale = 0.92 + Math.random() * 0.16;
+
+  playNoise(ctx, {
+    start: jitter,
+    duration: profile.clickDuration,
+    gain: profile.clickGain * clickScale,
+    frequency: profile.clickFrequency * (0.96 + Math.random() * 0.08),
+    q: profile.clickQ,
+    decay: profile.clickDecay,
+  });
+
+  playTone(ctx, {
+    start: 0.0015 + jitter,
+    duration: profile.bodyDuration,
+    gain: profile.bodyGain * bodyScale,
+    frequency: profile.bodyFrequency * (0.97 + Math.random() * 0.06),
+    type: profile.bodyType,
+    detune: (Math.random() - 0.5) * profile.bodyDetune,
+    decay: profile.bodyDecay,
+  });
+
+  playNoise(ctx, {
+    start: 0.006 + jitter,
+    duration: profile.thudDuration,
+    gain: profile.thudGain * thudScale,
+    frequency: profile.thudFrequency * (0.97 + Math.random() * 0.06),
+    q: profile.thudQ,
+    decay: profile.thudDecay,
+    filterType: 'lowpass',
+  });
+
+  if (profile.rattleGain > 0) {
+    playNoise(ctx, {
+      start: 0.011 + jitter,
+      duration: profile.rattleDuration,
+      gain: profile.rattleGain * (0.9 + Math.random() * 0.2),
+      frequency: profile.rattleFrequency * (0.96 + Math.random() * 0.08),
+      q: profile.rattleQ,
+      decay: profile.rattleDecay,
+    });
+  }
+}
+
+const SWITCHES = {
+  blue: (ctx) => {
+    playKeyboardPress(ctx, {
+      clickDuration: 0.0018,
+      clickGain: 0.82,
+      clickFrequency: 9200,
+      clickQ: 9.2,
+      clickDecay: 0.0034,
+      bodyDuration: 0.016,
+      bodyGain: 0.07,
+      bodyFrequency: 2380,
+      bodyType: 'square',
+      bodyDetune: 18,
+      bodyDecay: 0.009,
+      thudDuration: 0.006,
+      thudGain: 0.34,
+      thudFrequency: 260,
+      thudQ: 0.9,
+      thudDecay: 0.013,
+      rattleGain: 0.3,
+      rattleDuration: 0.004,
+      rattleFrequency: 5200,
+      rattleQ: 2.6,
+      rattleDecay: 0.006,
+    });
+  },
+
+  red: (ctx) => {
+    playKeyboardPress(ctx, {
+      clickDuration: 0.0028,
+      clickGain: 0.3,
+      clickFrequency: 5200,
+      clickQ: 5.5,
+      clickDecay: 0.005,
+      bodyDuration: 0.02,
+      bodyGain: 0.08,
+      bodyFrequency: 1180,
+      bodyType: 'triangle',
+      bodyDetune: 8,
+      bodyDecay: 0.013,
+      thudDuration: 0.009,
+      thudGain: 0.22,
+      thudFrequency: 175,
+      thudQ: 0.8,
+      thudDecay: 0.016,
+      rattleGain: 0.08,
+      rattleDuration: 0.0035,
+      rattleFrequency: 2600,
+      rattleQ: 2.1,
+      rattleDecay: 0.008,
+    });
+  },
+
+  brown: (ctx) => {
+    playKeyboardPress(ctx, {
+      clickDuration: 0.0026,
+      clickGain: 0.36,
+      clickFrequency: 6100,
+      clickQ: 6.2,
+      clickDecay: 0.0045,
+      bodyDuration: 0.019,
+      bodyGain: 0.1,
+      bodyFrequency: 1560,
+      bodyType: 'triangle',
+      bodyDetune: 10,
+      bodyDecay: 0.012,
+      thudDuration: 0.008,
+      thudGain: 0.2,
+      thudFrequency: 205,
+      thudQ: 0.9,
+      thudDecay: 0.015,
+      rattleGain: 0.12,
+      rattleDuration: 0.004,
+      rattleFrequency: 3400,
+      rattleQ: 2.3,
+      rattleDecay: 0.007,
+    });
+  },
+
+  silent: null,
+};
 
 function playSwitch(type) {
   const sound = SWITCHES[type];
@@ -318,6 +438,16 @@ function setPressedSmooth() {
   }, 135);
 }
 
+function setStagePressed() {
+  if (!stage) return;
+
+  stage.classList.add('stage-pressed');
+
+  window.setTimeout(() => {
+    stage.classList.remove('stage-pressed');
+  }, 135);
+}
+
 function onPress(e) {
   count += 1;
 
@@ -329,12 +459,7 @@ function onPress(e) {
   countNum.classList.add('bump');
 
   setPressedSmooth();
-
-  document.querySelector('.stage').classList.add('stage-pressed');
-
-  setTimeout(() => {
-    document.querySelector('.stage').classList.remove('stage-pressed');
-  }, 135);
+  setStagePressed();
 
   playSwitch(currentSwitch);
   spawnRipple(e);
