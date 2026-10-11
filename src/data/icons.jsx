@@ -271,6 +271,24 @@ export const ICONS = [
       </>
     ),
   },
+  {
+    key: 'crown',
+    label: '서포터',
+    premium: true,
+    thumb: (
+      <>
+        <path d="M8 24l2-10 6 5 2-9 2 9 6-5 2 10z" />
+        <path d="M8 24h20" />
+      </>
+    ),
+    art: (
+      <>
+        <path d="M18 54l4-22 13 11 5-20 5 20 13-11 4 22z" />
+        <path d="M18 54h44" />
+        <circle cx="40" cy="26" r="2.5" fill={INK} />
+      </>
+    ),
+  },
 ];
 
 export const ICON_MAP = Object.fromEntries(ICONS.map((icon) => [icon.key, icon]));
