@@ -3,7 +3,6 @@ export const SWITCH_OPTIONS = [
   { key: 'brown', name: '갈축', hint: '탁', color: '#92400E' },
   { key: 'red', name: '적축', hint: '스윽', color: '#EF4444' },
   { key: 'silent', name: '무음', hint: '…', color: '#9CA3AF' },
-  { key: 'gold', name: '골드축', hint: '특별한 손맛', color: '#D4AF37', premium: true },
 ];
 
 export const DEFAULT_SWITCH = 'red';
@@ -80,30 +79,6 @@ export const SWITCH_PROFILES = {
     rattleFrequency: 3400,
     rattleQ: 2.3,
     rattleDecay: 0.007,
-  },
-
-  gold: {
-    clickDuration: 0.0024,
-    clickGain: 0.42,
-    clickFrequency: 6600,
-    clickQ: 6.8,
-    clickDecay: 0.004,
-    bodyDuration: 0.021,
-    bodyGain: 0.12,
-    bodyFrequency: 1720,
-    bodyType: 'triangle',
-    bodyDetune: 12,
-    bodyDecay: 0.014,
-    thudDuration: 0.009,
-    thudGain: 0.28,
-    thudFrequency: 220,
-    thudQ: 0.9,
-    thudDecay: 0.017,
-    rattleGain: 0.15,
-    rattleDuration: 0.0042,
-    rattleFrequency: 3800,
-    rattleQ: 2.4,
-    rattleDecay: 0.0075,
   },
 
   silent: null,

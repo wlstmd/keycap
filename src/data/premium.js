@@ -9,7 +9,7 @@ export function isPremiumUnlocked() {
 // 코드 1개 = 펀딩 리워드로 전달되는 1회용 잠금해제 코드.
 // redeem_codes 테이블은 RLS로 완전히 잠겨있고, security definer 함수(redeem_code)만
 // 공개돼 있어 원자적인 UPDATE ... WHERE redeemed_at is null 로 중복 사용을 막는다.
-export async function redeemCode(code) {
+export async function redeemCode(code, name) {
   const trimmed = code.trim();
   if (!trimmed) return { ok: false, message: '코드를 입력해주세요' };
   if (!SUPABASE_READY) return { ok: false, message: '잠금 해제 서버가 아직 연결되지 않았어요' };
@@ -17,7 +17,7 @@ export async function redeemCode(code) {
   try {
     const claimed = await supabaseFetch('rpc/redeem_code', {
       method: 'POST',
-      body: JSON.stringify({ p_code: trimmed }),
+      body: JSON.stringify({ p_code: trimmed, p_name: (name || '').trim().slice(0, 12) }),
     });
 
     if (!claimed) {

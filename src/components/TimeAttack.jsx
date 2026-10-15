@@ -6,9 +6,12 @@ import { playSwitch } from '../audio/keyboardSound.js';
 import { addScore } from '../data/leaderboard.js';
 
 const DURATION = 10;
+const COUNTDOWN_FROM = 3;
+const URGENT_AT = 3;
 
-export default function TimeAttack({ icon, switchKey }) {
-  const [state, setState] = useState('idle'); // idle | running | done
+export default function TimeAttack({ icon, switchKey, photo, premiumUnlocked }) {
+  const [state, setState] = useState('idle'); // idle | countdown | running | done
+  const [countdown, setCountdown] = useState(COUNTDOWN_FROM);
   const [score, setScore] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(DURATION);
   const [name, setName] = useState('');
@@ -16,15 +19,21 @@ export default function TimeAttack({ icon, switchKey }) {
   const [saving, setSaving] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const timerRef = useRef(null);
+  const countdownRef = useRef(null);
 
-  useEffect(() => () => clearInterval(timerRef.current), []);
+  useEffect(
+    () => () => {
+      clearInterval(timerRef.current);
+      clearInterval(countdownRef.current);
+    },
+    []
+  );
 
-  function start() {
-    clearInterval(timerRef.current);
+  function beginRun() {
+    setState('running');
     setScore(0);
     setSecondsLeft(DURATION);
     setSaved(false);
-    setState('running');
 
     timerRef.current = setInterval(() => {
       setSecondsLeft((s) => {
@@ -39,6 +48,25 @@ export default function TimeAttack({ icon, switchKey }) {
     }, 1000);
   }
 
+  function start() {
+    clearInterval(timerRef.current);
+    clearInterval(countdownRef.current);
+
+    let n = COUNTDOWN_FROM;
+    setCountdown(n);
+    setState('countdown');
+
+    countdownRef.current = setInterval(() => {
+      n -= 1;
+      if (n <= 0) {
+        clearInterval(countdownRef.current);
+        beginRun();
+      } else {
+        setCountdown(n);
+      }
+    }, 600);
+  }
+
   function press() {
     playSwitch(switchKey);
     if (state === 'running') setScore((n) => n + 1);
@@ -46,30 +74,45 @@ export default function TimeAttack({ icon, switchKey }) {
 
   async function save() {
     setSaving(true);
-    await addScore(name, score);
+    const finalName = premiumUnlocked ? `👑 ${name.trim() || '익명'}` : name;
+    await addScore(finalName, score);
     setSaving(false);
     setSaved(true);
     setRefreshKey((k) => k + 1);
   }
 
+  const urgent = state === 'running' && secondsLeft <= URGENT_AT;
+
   return (
     <>
-      <section className="stage" aria-label="타임어택 키캡">
-        <div className="keycap-assembly">
+      <section className={urgent ? 'stage urgent' : 'stage'} aria-label="타임어택 키캡">
+        <div className={urgent ? 'keycap-assembly urgent' : 'keycap-assembly'}>
           <Keychain />
-          <Keycap icon={icon} onPress={press} />
+          <Keycap icon={icon} onPress={press} photo={photo} />
         </div>
+
+        {state === 'countdown' && (
+          <div className="countdown-overlay" key={countdown}>
+            {countdown}
+          </div>
+        )}
       </section>
 
       <section className="panel">
         <div className="attack-row">
           <div>
             <p className="panel-label">
-              {state === 'running' ? '남은 시간' : `${DURATION}초 타임어택`}
+              {state === 'running'
+                ? '남은 시간'
+                : state === 'countdown'
+                ? '준비!'
+                : `${DURATION}초 타임어택`}
             </p>
-            <p className="count-status">
+            <p className={urgent ? 'count-status urgent' : 'count-status'}>
               {state === 'running'
                 ? `${secondsLeft}초`
+                : state === 'countdown'
+                ? '곧 시작합니다...'
                 : state === 'done'
                 ? `${score}타 기록!`
                 : '시작하면 10초간 최대한 눌러보세요'}
@@ -78,6 +121,10 @@ export default function TimeAttack({ icon, switchKey }) {
 
           {state === 'running' ? (
             <span className="count-num">{score}</span>
+          ) : state === 'countdown' ? (
+            <button className="attack-start" disabled>
+              {countdown}
+            </button>
           ) : (
             <button className="attack-start" onClick={start}>
               {state === 'done' ? '다시 하기' : '시작'}

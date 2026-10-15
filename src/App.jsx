@@ -6,10 +6,12 @@ import SwitchPicker from './components/SwitchPicker.jsx';
 import PressCounter from './components/PressCounter.jsx';
 import TimeAttack from './components/TimeAttack.jsx';
 import PremiumUnlock from './components/PremiumUnlock.jsx';
+import FoundersWall from './components/FoundersWall.jsx';
 import { DEFAULT_ICON, ICON_MAP } from './data/icons.jsx';
 import { DEFAULT_SWITCH } from './data/switches.js';
 import { playSwitch } from './audio/keyboardSound.js';
 import { isPremiumUnlocked } from './data/premium.js';
+import { getPhotoKeycaps, addPhotoKeycap, removePhotoKeycap } from './data/photoKeycap.js';
 
 export default function App() {
   const [count, setCount] = useState(0);
@@ -17,13 +19,33 @@ export default function App() {
   const [switchKey, setSwitchKey] = useState(DEFAULT_SWITCH);
   const [mode, setMode] = useState('free'); // free | timeattack
   const [premiumUnlocked, setPremiumUnlocked] = useState(() => isPremiumUnlocked());
+  const [photos, setPhotos] = useState(() => getPhotoKeycaps());
+  const [foundersKey, setFoundersKey] = useState(0);
 
   function handlePress() {
     setCount((n) => n + 1);
     playSwitch(switchKey);
   }
 
-  const icon = ICON_MAP[iconKey];
+  function handleUnlock() {
+    setPremiumUnlocked(true);
+    setFoundersKey((k) => k + 1);
+  }
+
+  function handleAddPhoto(dataUrl) {
+    const entry = addPhotoKeycap(dataUrl);
+    setPhotos((prev) => [...prev, entry]);
+    setIconKey(`photo:${entry.id}`);
+  }
+
+  function handleRemovePhoto(id) {
+    setPhotos(removePhotoKeycap(id));
+    setIconKey((k) => (k === `photo:${id}` ? DEFAULT_ICON : k));
+  }
+
+  const showPhoto = iconKey.startsWith('photo:');
+  const activePhoto = showPhoto ? photos.find((p) => p.id === iconKey.slice(6))?.dataUrl : undefined;
+  const icon = ICON_MAP[iconKey] || ICON_MAP[DEFAULT_ICON];
 
   return (
     <main className="app">
@@ -60,22 +82,29 @@ export default function App() {
           <section className="stage" aria-label="키캡">
             <div className="keycap-assembly">
               <Keychain />
-              <Keycap icon={icon} onPress={handlePress} />
+              <Keycap icon={icon} onPress={handlePress} photo={activePhoto} />
             </div>
           </section>
 
           <section className="panel">
-            <IconPicker value={iconKey} onChange={setIconKey} unlocked={premiumUnlocked} />
+            <IconPicker value={iconKey} onChange={setIconKey} photos={photos} onRemovePhoto={handleRemovePhoto} />
             <div className="panel-divider" />
-            <SwitchPicker value={switchKey} onChange={setSwitchKey} unlocked={premiumUnlocked} />
+            <SwitchPicker value={switchKey} onChange={setSwitchKey} />
             <div className="panel-divider" />
-            <PremiumUnlock unlocked={premiumUnlocked} onUnlock={() => setPremiumUnlocked(true)} />
+            <FoundersWall refreshKey={foundersKey} />
+            <div className="panel-divider" />
+            <PremiumUnlock
+              unlocked={premiumUnlocked}
+              onUnlock={handleUnlock}
+              photoCount={photos.length}
+              onAddPhoto={handleAddPhoto}
+            />
             <div className="panel-divider" />
             <PressCounter count={count} />
           </section>
         </>
       ) : (
-        <TimeAttack icon={icon} switchKey={switchKey} />
+        <TimeAttack icon={icon} switchKey={switchKey} photo={activePhoto} premiumUnlocked={premiumUnlocked} />
       )}
     </main>
   );

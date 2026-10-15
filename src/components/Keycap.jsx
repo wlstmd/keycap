@@ -4,7 +4,7 @@ const PRESS_DURATION = 135;
 const RIPPLE_DURATION = 420;
 const RIPPLE_SIZE = 100;
 
-export default function Keycap({ icon, onPress }) {
+export default function Keycap({ icon, onPress, photo }) {
   const [pressed, setPressed] = useState(false);
   const [ripples, setRipples] = useState([]);
   const buttonRef = useRef(null);
@@ -89,21 +89,26 @@ export default function Keycap({ icon, onPress }) {
           </div>
 
           <div className="cap-art">
-            <span className="cap-label">{icon.label}</span>
-
-            <span className="cap-icon">
-              <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g
-                  stroke="#1a1714"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                >
-                  {icon.art}
-                </g>
-              </svg>
-            </span>
+            {photo ? (
+              <img className="cap-photo" src={photo} alt="" />
+            ) : (
+              <>
+                <span className="cap-label">{icon.label}</span>
+                <span className="cap-icon">
+                  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g
+                      stroke="#1a1714"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    >
+                      {icon.art}
+                    </g>
+                  </svg>
+                </span>
+              </>
+            )}
           </div>
         </div>
 
